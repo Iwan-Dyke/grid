@@ -88,7 +88,8 @@ Supported wiki-link formats in body (synced to frontmatter):
 
 ### RDF Strategy
 
-- Vocab preference: SKOS, FOAF, DCTERMS, schema.org — custom `grid:` namespace for domain-specific predicates
+- Vocab preference: SKOS, DCTERMS, schema.org — custom `grid:` namespace for domain-specific predicates
+- Additional namespaces (e.g. FOAF) are user-configurable via config — not shipped by default
 - RDF computed on-the-fly from markdown — no sidecar files
 - Dual typing: `grid:Note` + `schema:Article`
 - Tags typed as `skos:Concept` with `skos:prefLabel`
@@ -110,7 +111,7 @@ Supported wiki-link formats in body (synced to frontmatter):
 - `grid serve` — launches local FastAPI server, opens browser
 - Cytoscape.js for graph rendering (force-directed, interactive)
 - Phase 1: graph visualization — click node to see note content, navigate connections, filter by tag/relationship type, search box
-- Phase 2: SPARQL query interface (text input → `graph.query()` → results table)
+- Phase 2: SPARQL query interface (text input → `service.query_sparql()` → results table)
 
 ---
 
@@ -121,7 +122,8 @@ Modular with clear dependency boundaries. Ports (interfaces) defined as Python `
 **Dependency rule:** outer modules depend on inner modules; `note_modeling` depends on nothing outside itself.
 
 ```
-note_modeling → vault_parsing → rdf_projection → command_routing → web_serving
+note_modeling → vault_parsing → rdf_projection → service → command_routing
+                                                          → web_serving
 ```
 
 ### Modules
@@ -131,7 +133,8 @@ note_modeling → vault_parsing → rdf_projection → command_routing → web_s
 | `note_modeling/` | Note, Link, Tag value objects, graph traversal, port definitions (Protocols) |
 | `vault_parsing/` | Markdown parsing, frontmatter read/write, wiki-link extraction, sync logic |
 | `rdf_projection/` | Note → RDF triples, symmetry rules, SPARQL queries, serialization |
-| `command_routing/` | Typer CLI commands, wizard flows, fuzzy search, scripting flags |
+| `service.py` | Orchestration layer — shared entry point for `command_routing` and `web_serving` |
+| `command_routing/` | Typer CLI commands, wizard flows, scripting flags |
 | `web_serving/` | FastAPI server, Cytoscape.js frontend, graph API endpoints |
 
 ### Package Structure
@@ -153,16 +156,24 @@ grid/
 
 ---
 
-## Open Questions
+## Just Commands
 
-- Full set of `just` commands to define
-- SPARQL query interface design (web UI — phase 2)
+| Command | What it does |
+|---|---|
+| `just dev` | `uv run --with . grid` — isolated temporary env for testing (no side effects) |
+| `just install` | `uv pip install -e .` — editable install for development |
+| `just build` | `python -m build --check` — validate package is well-formed |
+| `just test` | run pytest |
+| `just lint` | run ruff check |
+| `just fmt` | run ruff format |
+| `just clean` | remove build artifacts |
+| `just docker-build` | build Docker image |
+| `just docker-run` | run via Docker |
 
 ---
 
 ## Out of Scope (for now)
 
 - Index persistence / caching
-- File watching for incremental graph rebuild
 - Import RDF → notes
 - Multi-user / remote vault

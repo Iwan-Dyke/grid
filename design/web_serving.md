@@ -9,7 +9,6 @@ Local web interface for exploring the knowledge graph visually. FastAPI backend 
 ## Dependencies
 
 - `note_modeling` — value objects
-- `rdf_projection` — `RDFlibGraphQuery` for SPARQL (phase 2)
 - `service.py` — orchestration layer
 - `fastapi` — web framework
 - `uvicorn` — ASGI server
@@ -31,11 +30,16 @@ Local web interface for exploring the knowledge graph visually. FastAPI backend 
 
 ### Frontend
 
-- Single HTML page with embedded Cytoscape.js
+- Static files: `index.html`, `app.js`, `styles.css` served from `static/`
 - Force-directed layout
 - Click node → side panel shows note content
 - Filter controls: tag dropdown, relationship type dropdown, search box
 - Edge labels show relationship type
+- Refresh button — reloads graph data from server without full page reload
+
+### Cytoscape.js Payload
+
+`build_cytoscape_payload(graph: Graph, tag: str | None, link_type: str | None) -> dict` — lives in `web_serving`, converts `Graph` into Cytoscape.js JSON format, applies tag and relationship type filters if provided.
 
 ### Cytoscape.js Graph Format
 
@@ -59,10 +63,27 @@ Local web interface for exploring the knowledge graph visually. FastAPI backend 
 
 ---
 
-## Open Questions
+## Frontend Delivery
 
-- Serve frontend as static files or inline in a single HTML template?
-- Whether to use WebSocket for live graph updates
+Static files served from a `static/` directory mounted in FastAPI:
+
+```
+web_serving/
+└── static/
+    ├── index.html
+    ├── app.js
+    └── styles.css
+```
+
+## Phase 3 — Live Graph Updates
+
+WebSocket + file watching for automatic graph updates when notes change on disk.
+
+- `watchfiles` monitors the `notes/` directory
+- On change, server rebuilds the graph and pushes update via WebSocket
+- Frontend re-renders Cytoscape.js on receipt
+
+Phase 1 ships with a manual "Refresh" button instead. Phase 3 is additive — no rework of existing REST API.
 
 ---
 
