@@ -1,10 +1,29 @@
 [project]
 name = "grid"
 version = "0.1.0"
-description = "Add your description here"
+description = "CLI tool for authoring and managing a personal knowledge graph stored as markdown notes"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "typer>=0.15.0",
+    "rdflib>=7.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.34.0",
+    "python-frontmatter>=1.1.0",
+    "python-slugify>=8.0.0",
+    "thefuzz>=0.22.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+grid = "grid.command_routing:app"
+
+[dependency-groups]
+dev = [
     "pytest>=9.0.3",
     "ruff>=0.15.10",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
