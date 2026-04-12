@@ -118,9 +118,9 @@ class RDFlibGraphQuery:
 ```
 
 - `build` — protocol method, produces domain `Triple` objects
+- `query` — protocol method, executes SPARQL against the internal rdflib graph
 - `to_graph` — internal, converts `Triple` list to rdflib `Graph`
-- `query` — executes SPARQL against the internal rdflib graph
-- `serialize` — protocol method, outputs Turtle/N-Triples/JSON-LD
+- `serialize` — implementation detail of `RDFlibGraphQuery` only, not part of the `GraphQuery` protocol; rdflib-specific, outputs Turtle/N-Triples/JSON-LD
 
 ---
 
