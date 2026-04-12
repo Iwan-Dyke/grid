@@ -21,6 +21,7 @@ grid = "grid.command_routing:app"
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
+    "pytest-bdd>=8.0.0",
     "ruff>=0.15.10",
 ]
 
