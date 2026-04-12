@@ -50,7 +50,7 @@ Pipeline: `markdown files → Note structs → RDF triples (on-the-fly) → grap
 
 Frontmatter is the canonical store. Wiki-links in the body are an authoring shortcut synced back to frontmatter by the tool. RDF projection reads frontmatter only.
 
-**Frontmatter schema** (inherited from weave2):
+**Frontmatter schema**:
 
 ```yaml
 id: "20260409221400"
@@ -79,64 +79,72 @@ Supported wiki-link formats in body (synced to frontmatter):
 
 | Alias | RDF Predicate | Vocab |
 |---|---|---|
-| `linksTo` | `weave:linksTo` | custom |
+| `linksTo` | `grid:linksTo` | custom |
 | `related` | `skos:related` | SKOS |
 | `broader` | `skos:broader` | SKOS |
 | `narrower` | `skos:narrower` | SKOS |
 | `seeAlso` | `rdfs:seeAlso` | RDFS |
-| custom | `weave:{type}` | custom |
+| custom | `grid:{type}` | custom |
 
 ### RDF Strategy
 
-- Vocab preference: SKOS, FOAF, DCTERMS, schema.org — custom `weave:` namespace for domain-specific predicates
+- Vocab preference: SKOS, FOAF, DCTERMS, schema.org — custom `grid:` namespace for domain-specific predicates
 - RDF computed on-the-fly from markdown — no sidecar files
-- Dual typing: `weave:Note` + `schema:Article`
+- Dual typing: `grid:Note` + `schema:Article`
 - Tags typed as `skos:Concept` with `skos:prefLabel`
-- Links unidirectional — reasoners infer symmetric relationships
+- Links are unidirectional by default; the rdflib adapter hardcodes symmetry for specific predicates:
+  - `skos:related` — emit both directions
+  - `skos:broader` / `skos:narrower` — emit the inverse automatically
+  - All other predicates (`grid:linksTo`, `rdfs:seeAlso`, custom) — unidirectional only
 
 ### Authoring UX
 
 - Primary: interactive wizard (`grid new`, `grid link`) with prompts
 - Fallback: flagged subcommands for scripting and power use
-- `grid sync` parses wiki-links from body and syncs to frontmatter
+- `grid link` inserts wiki-links into the note body (not directly into frontmatter)
+- `grid sync` parses wiki-links from body and fully replaces the `links:` array in frontmatter
+- Flow is always: body → sync → frontmatter (body is the single source of truth for links)
 
 ### Visualisation
 
 - `grid serve` — launches local FastAPI server, opens browser
 - Cytoscape.js for graph rendering (force-directed, interactive)
-- Features: click node to see note content, navigate connections, filter by tag/relationship type, search box, SPARQL query interface
+- Phase 1: graph visualization — click node to see note content, navigate connections, filter by tag/relationship type, search box
+- Phase 2: SPARQL query interface (text input → `graph.query()` → results table)
 
 ---
 
 ## Architecture
 
-Hexagonal (ports and adapters).
+Modular with clear dependency boundaries. Ports (interfaces) defined as Python `Protocol` classes in `note_modeling/`.
 
-**Dependency rule:** adapters depend on the domain; the domain depends on nothing outside itself.
+**Dependency rule:** outer modules depend on inner modules; `note_modeling` depends on nothing outside itself.
 
-- **Domain** — Note, Link, Graph, RDF projection concepts. No framework or library imports.
-- **Ports** — interfaces the domain exposes or requires (`NoteRepository`, `GraphQuery`, `Exporter`)
-- **Adapters** — concrete implementations per technology
+```
+note_modeling → vault_parsing → rdf_projection → command_routing → web_serving
+```
+
+### Modules
+
+| Module | Responsibility |
+|---|---|
+| `note_modeling/` | Note, Link, Tag value objects, graph traversal, port definitions (Protocols) |
+| `vault_parsing/` | Markdown parsing, frontmatter read/write, wiki-link extraction, sync logic |
+| `rdf_projection/` | Note → RDF triples, symmetry rules, SPARQL queries, serialization |
+| `command_routing/` | Typer CLI commands, wizard flows, fuzzy search, scripting flags |
+| `web_serving/` | FastAPI server, Cytoscape.js frontend, graph API endpoints |
 
 ### Package Structure
 
 ```
 grid/
-├── src/
-│   └── grid/
-│       ├── domain/
-│       │   ├── note.py          # Note, Link value objects
-│       │   ├── graph.py         # Graph, traversal logic
-│       │   └── rdf.py           # RDF projection concepts (no rdflib)
-│       ├── ports/
-│       │   ├── repository.py    # NoteRepository interface
-│       │   ├── query.py         # GraphQuery interface
-│       │   └── exporter.py      # Exporter interface
-│       └── adapters/
-│           ├── markdown.py      # MarkdownFileRepository
-│           ├── rdflib.py        # RDFlibGraph (rdflib import lives here)
-│           ├── cli/             # Typer CLI + wizard
-│           └── web/             # FastAPI + Cytoscape.js
+├── grid/
+│   ├── note_modeling/      # Core domain — no external dependencies
+│   ├── vault_parsing/      # Markdown ↔ Note conversion, sync
+│   ├── rdf_projection/     # RDF projection, SPARQL, serialization
+│   ├── command_routing/    # Typer CLI + wizards
+│   ├── web_serving/        # FastAPI + Cytoscape.js
+│   └── service.py          # Orchestration layer tying modules together
 ├── tests/
 ├── justfile
 ├── Dockerfile
@@ -147,10 +155,8 @@ grid/
 
 ## Open Questions
 
-- What does `domain/rdf.py` contain if not rdflib code? (in progress)
 - Full set of `just` commands to define
-- SPARQL query interface design (web UI)
-- `grid sync` behaviour — auto on save, or manual command?
+- SPARQL query interface design (web UI — phase 2)
 
 ---
 
