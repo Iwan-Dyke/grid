@@ -9,14 +9,11 @@ Typer CLI application. Routes user commands to the appropriate service operation
 ## Dependencies
 
 - `note_modeling` — value objects
-- `vault_parsing` — `MarkdownFileRepository`
-- `rdf_projection` — `RDFlibGraphQuery`
 - `service.py` — orchestration layer
 - `typer` — CLI framework (MIT)
 - `rich` — terminal output formatting (MIT)
-- `thefuzz` — fuzzy string matching for search and wizards (MIT)
 
-All dependencies must be MIT licensed.
+All dependencies must be open source with a permissive license (MIT, BSD, Apache 2.0).
 
 ---
 
@@ -67,9 +64,9 @@ Display a note's content and metadata.
 
 ### `grid search <query>`
 
-Fuzzy search notes by title and body content using `thefuzz`. This is the only search implementation — `Graph` class does not have a search method.
+Fuzzy search notes by title and body content. Delegates to `service.search(query)` — search logic lives in `service.py`, not here.
 
-Search also used by wizards in `grid new` and `grid link` for fuzzy title matching.
+Wizards in `grid new` and `grid link` also call `service.search(query)` for fuzzy title matching.
 
 ### `grid export`
 
@@ -95,4 +92,4 @@ Run a SPARQL query against the vault graph.
 
 ## Build Order
 
-Built fourth, after `rdf_projection`. Tests use the Typer test runner (`CliRunner`) against a temporary vault.
+Built fifth, after `service`. Tests use the Typer test runner (`CliRunner`) against a temporary vault.
