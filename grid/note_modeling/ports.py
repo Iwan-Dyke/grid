@@ -1,6 +1,7 @@
 from typing import Protocol, runtime_checkable
 
 from grid.note_modeling.note import Note
+from grid.note_modeling.triple import Triple
 
 
 @runtime_checkable
@@ -11,3 +12,9 @@ class NoteRepository(Protocol):
     def save(self, note: Note) -> None: ...
     def delete(self, note_id: str) -> None: ...
     def exists(self, note_id: str) -> bool: ...
+
+
+@runtime_checkable
+class GraphQuery(Protocol):
+    def build(self, notes: list[Note]) -> list[Triple]: ...
+    def query(self, sparql: str) -> list[dict]: ...

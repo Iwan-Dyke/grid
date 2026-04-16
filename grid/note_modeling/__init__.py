@@ -4,6 +4,7 @@ from grid.note_modeling.triple import Triple
 from grid.note_modeling.note import Note
 from grid.note_modeling.graph import Graph
 from grid.note_modeling.identifiers import generate_note_id, validate_note_id
+from grid.note_modeling.ports import NoteRepository, GraphQuery
 
 __all__ = [
     "Tag",
@@ -13,4 +14,6 @@ __all__ = [
     "Graph",
     "generate_note_id",
     "validate_note_id",
+    "NoteRepository",
+    "GraphQuery",
 ]
