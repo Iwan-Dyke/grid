@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 
 from grid.note_modeling.identifiers import validate_note_id
@@ -23,7 +23,9 @@ class Note:
         if not stripped_title:
             raise ValueError("title cannot be empty")
         object.__setattr__(self, "title", stripped_title)
-        if not self.note_type:
+        stripped_type = self.note_type.strip()
+        if not stripped_type:
             raise ValueError("note_type cannot be empty")
+        object.__setattr__(self, "note_type", stripped_type)
         if self.modified < self.created:
             raise ValueError("modified cannot be before created")

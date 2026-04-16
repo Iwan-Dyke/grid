@@ -11,5 +11,7 @@ class Link:
 
     def __post_init__(self):
         validate_note_id(self.target_id)
-        if not self.link_type:
+        stripped = self.link_type.strip()
+        if not stripped:
             raise ValueError("link_type cannot be empty")
+        object.__setattr__(self, "link_type", stripped)

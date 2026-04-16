@@ -51,6 +51,14 @@ class TestLinkTypeValidation:
         with pytest.raises(ValueError):
             Link(target_id="20260409221400", link_type="")
 
+    def test_rejects_whitespace_only(self):
+        with pytest.raises(ValueError):
+            Link(target_id="20260409221400", link_type="   ")
+
+    def test_strips_whitespace(self):
+        link = Link(target_id="20260409221400", link_type="  related  ")
+        assert link.link_type == "related"
+
     def test_accepts_custom_type(self):
         link = Link(target_id="20260409221400", link_type="inspiredBy")
         assert link.link_type == "inspiredBy"

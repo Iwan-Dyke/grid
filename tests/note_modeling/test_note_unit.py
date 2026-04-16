@@ -77,6 +77,16 @@ class TestNoteTitleValidation:
         assert note.title == "My Note"
 
 
+class TestNoteTypeValidation:
+    def test_rejects_whitespace_only(self):
+        with pytest.raises(ValueError):
+            make_note(note_type="   ")
+
+    def test_strips_whitespace(self):
+        note = make_note(note_type="  reference  ")
+        assert note.note_type == "reference"
+
+
 class TestNoteTimestampValidation:
     def test_modified_equals_created(self):
         note = make_note(created=NOW, modified=NOW)
