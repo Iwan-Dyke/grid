@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 
 from grid.note_modeling.ports import NoteRepository
-from grid.note_modeling import Note, Tag
+from grid.note_modeling import Note
 
 
 NOW = datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)

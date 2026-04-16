@@ -29,8 +29,9 @@ Feature: Wiki-link extraction
     When wiki-links are extracted
     Then 0 links are found
 
-  Scenario: Label without type is not supported
+  Scenario: Label without type is ambiguous
     Given a body containing "[[20260409221400|some label]]"
     When wiki-links are extracted
     Then 1 link is found
     And the link has target "20260409221400" and type "linksTo" and no label
+    And the ambiguity is flagged

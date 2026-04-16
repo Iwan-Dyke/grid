@@ -32,6 +32,7 @@ def test_sync_modified_unchanged():
 
 
 NOW = datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)
+LATER = datetime(2026, 4, 10, 0, 0, 0, tzinfo=UTC)
 
 
 def make_note(body="", links=()):
@@ -78,30 +79,31 @@ def note_with_stale_link(body, target):
 
 @when("the note is synced", target_fixture="result")
 def sync_note(note):
-    return sync(note)
+    return sync(note, now=LATER)
 
 
 @then(parsers.parse('the note has {count:d} link to "{target}"'))
 def check_link(result, count, target):
-    assert len(result.links) == count
-    assert result.links[0].target_id == target
+    assert len(result.note.links) == count
+    assert result.note.links[0].target_id == target
 
 
 @then(parsers.parse("the note has {count:d} links"))
 def check_link_count(result, count):
-    assert len(result.links) == count
+    assert len(result.note.links) == count
 
 
 @then("the original note is returned unchanged")
-def check_same_object(note, result):
-    assert result is note
+def check_unchanged(result, note):
+    assert result.note is note
+    assert not result.changed
 
 
 @then("the modified timestamp is updated")
-def check_modified_updated(note, result):
-    assert result.modified > note.modified
+def check_modified_updated(result):
+    assert result.note.modified == LATER
 
 
 @then("the modified timestamp is unchanged")
-def check_modified_unchanged(note, result):
-    assert result.modified == note.modified
+def check_modified_unchanged(result, note):
+    assert result.note.modified == note.modified

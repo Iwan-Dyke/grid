@@ -1,4 +1,3 @@
-import pytest
 from pytest_bdd import scenario, given, when, then, parsers
 
 from grid.note_modeling.tag import Tag
