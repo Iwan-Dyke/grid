@@ -1,4 +1,5 @@
 from datetime import datetime, UTC
+from pathlib import Path
 
 import frontmatter
 
@@ -6,7 +7,7 @@ from grid.note_modeling import Note, Tag, Link
 from grid.vault_parsing.errors import NoteParseError
 
 
-def parse_note(path) -> Note:
+def parse_note(path: Path) -> Note:
     try:
         post = frontmatter.load(str(path))
     except Exception as e:
@@ -62,7 +63,7 @@ def deserialize_link(data: dict) -> Link:
     )
 
 
-def parse_datetime(value) -> datetime:
+def parse_datetime(value: str | datetime) -> datetime:
     if isinstance(value, datetime):
         if value.tzinfo is None:
             return value.replace(tzinfo=UTC)

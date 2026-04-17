@@ -57,11 +57,11 @@ class TestAmbiguous:
 
     def test_no_ambiguity_for_typed_label(self):
         result = extract_wiki_links("[[related::20260409221400|see this]]")
-        assert result.ambiguous == []
+        assert result.ambiguous == ()
 
     def test_no_ambiguity_for_plain_link(self):
         result = extract_wiki_links("[[20260409221400]]")
-        assert result.ambiguous == []
+        assert result.ambiguous == ()
 
     def test_multiple_ambiguous(self):
         body = "[[20260409221400|label1]] and [[20260101120000|label2]]"
@@ -85,13 +85,13 @@ class TestMultipleLinks:
 
 class TestEdgeCases:
     def test_empty_body(self):
-        assert extract_wiki_links("").links == []
+        assert extract_wiki_links("").links == ()
 
     def test_no_links(self):
-        assert extract_wiki_links("Just plain text").links == []
+        assert extract_wiki_links("Just plain text").links == ()
 
     def test_malformed_id_ignored(self):
-        assert extract_wiki_links("[[notanid]]").links == []
+        assert extract_wiki_links("[[notanid]]").links == ()
 
     def test_link_in_multiline_body(self):
         body = "First line\n\nSee [[20260409221400]]\n\nLast line"

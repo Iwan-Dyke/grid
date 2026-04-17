@@ -15,8 +15,8 @@ class AmbiguousLink:
 
 @dataclass(frozen=True)
 class ParseResult:
-    links: list[Link]
-    ambiguous: list[AmbiguousLink]
+    links: tuple[Link, ...]
+    ambiguous: tuple[AmbiguousLink, ...]
 
 
 def extract_wiki_links(body: str) -> ParseResult:
@@ -50,4 +50,4 @@ def extract_wiki_links(body: str) -> ParseResult:
                 link_type=resolved_type,
                 label=resolved_label,
             ))
-    return ParseResult(links=links, ambiguous=ambiguous)
+    return ParseResult(links=tuple(links), ambiguous=tuple(ambiguous))

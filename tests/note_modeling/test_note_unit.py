@@ -1,26 +1,9 @@
 import pytest
 from datetime import datetime, UTC
 
-from grid.note_modeling.note import Note
-from grid.note_modeling.tag import Tag
-from grid.note_modeling.link import Link
+from grid.note_modeling import Tag, Link
 
-
-NOW = datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)
-
-
-def make_note(**overrides):
-    defaults = {
-        "id": "20260409221400",
-        "title": "Test Note",
-        "created": NOW,
-        "modified": NOW,
-        "tags": (),
-        "links": (),
-        "body": "",
-    }
-    defaults.update(overrides)
-    return Note(**defaults)
+from tests.note_modeling.conftest import make_note, NOW
 
 
 class TestNoteCreation:

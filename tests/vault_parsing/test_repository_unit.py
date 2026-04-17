@@ -5,22 +5,7 @@ from grid.note_modeling import Note, Tag, Link, NoteRepository
 from grid.vault_parsing.repository import MarkdownFileRepository
 from grid.vault_parsing.errors import NoteNotFoundError, NoteParseError
 
-
-NOW = datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)
-
-
-def make_note(**overrides):
-    defaults = {
-        "id": "20260409221400",
-        "title": "Test Note",
-        "created": NOW,
-        "modified": NOW,
-        "tags": (),
-        "links": (),
-        "body": "Hello world",
-    }
-    defaults.update(overrides)
-    return Note(**defaults)
+from tests.vault_parsing.conftest import make_note
 
 
 class TestProtocolConformance:
@@ -85,7 +70,6 @@ class TestSaveAndLoad:
         repo.save(updated)
         loaded = repo.load(note.id)
         assert loaded.body == "updated"
-
 
     def test_title_rename_removes_old_file(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)

@@ -9,7 +9,7 @@ from grid.vault_parsing.wiki_links import AmbiguousLink, extract_wiki_links
 class SyncResult:
     note: Note
     changed: bool
-    ambiguous: list[AmbiguousLink]
+    ambiguous: tuple[AmbiguousLink, ...]
 
 
 def sync(note: Note, now: datetime | None = None) -> SyncResult:

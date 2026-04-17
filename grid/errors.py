@@ -1,0 +1,2 @@
+class GridError(Exception):
+    pass

@@ -49,9 +49,7 @@ class MarkdownFileRepository:
     def exists(self, note_id: str) -> bool:
         if note_id in self._index:
             return True
-        for path in self._vault_path.glob(f"{note_id}-*.md"):
-            return True
-        return False
+        return any(self._vault_path.glob(f"{note_id}-*.md"))
 
     def _resolve(self, note_id: str) -> Path:
         if note_id in self._index:

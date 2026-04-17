@@ -1,23 +1,7 @@
-from datetime import datetime, UTC
-
-from grid.note_modeling import Note, Link
+from grid.note_modeling import Link
 from grid.vault_parsing.sync import sync
 
-
-NOW = datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)
-LATER = datetime(2026, 4, 10, 0, 0, 0, tzinfo=UTC)
-
-
-def make_note(body="", links=()):
-    return Note(
-        id="20260409221400",
-        title="Test",
-        created=NOW,
-        modified=NOW,
-        tags=(),
-        links=links,
-        body=body,
-    )
+from tests.vault_parsing.conftest import make_note, LATER
 
 
 class TestSyncAddsLinks:
@@ -101,7 +85,7 @@ class TestSyncAmbiguous:
     def test_no_ambiguity_for_typed_links(self):
         note = make_note(body="[[related::20260101120000|see this]]")
         result = sync(note, now=LATER)
-        assert result.ambiguous == []
+        assert result.ambiguous == ()
 
     def test_changed_is_true(self):
         note = make_note(body="[[20260101120000]]")

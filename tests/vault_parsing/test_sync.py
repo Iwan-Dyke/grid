@@ -5,6 +5,8 @@ from pytest_bdd import scenario, given, when, then, parsers
 from grid.note_modeling import Note, Link
 from grid.vault_parsing.sync import sync
 
+from tests.vault_parsing.conftest import LATER
+
 
 @scenario("features/sync.feature", "Links extracted from body replace frontmatter links")
 def test_sync_adds_links():
@@ -32,10 +34,9 @@ def test_sync_modified_unchanged():
 
 
 NOW = datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)
-LATER = datetime(2026, 4, 10, 0, 0, 0, tzinfo=UTC)
 
 
-def make_note(body="", links=()):
+def _make_note(body="", links=()):
     return Note(
         id="20260409221400",
         title="Test",
@@ -52,7 +53,7 @@ def make_note(body="", links=()):
     target_fixture="note",
 )
 def note_no_links(body):
-    return make_note(body=body)
+    return _make_note(body=body)
 
 
 @given(
@@ -60,7 +61,7 @@ def note_no_links(body):
     target_fixture="note",
 )
 def note_matching_links(body):
-    return make_note(
+    return _make_note(
         body=body,
         links=(Link(target_id="20260101120000", link_type="linksTo"),),
     )
@@ -71,7 +72,7 @@ def note_matching_links(body):
     target_fixture="note",
 )
 def note_with_stale_link(body, target):
-    return make_note(
+    return _make_note(
         body=body,
         links=(Link(target_id=target, link_type="linksTo"),),
     )

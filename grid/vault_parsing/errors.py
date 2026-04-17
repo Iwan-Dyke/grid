@@ -1,5 +1,4 @@
-class GridError(Exception):
-    pass
+from grid.errors import GridError
 
 
 class NoteNotFoundError(GridError):
