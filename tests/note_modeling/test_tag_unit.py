@@ -56,6 +56,31 @@ class TestTagValidation:
         tag = Tag(name="a" * MAX_TAG_LENGTH)
         assert len(tag.name) == MAX_TAG_LENGTH
 
+    def test_accepts_hyphen(self):
+        assert Tag(name="linked-data").name == "linked-data"
+
+    def test_accepts_underscore(self):
+        assert Tag(name="linked_data").name == "linked_data"
+
+    def test_accepts_digits(self):
+        assert Tag(name="web3").name == "web3"
+
+    def test_rejects_slash(self):
+        with pytest.raises(ValueError):
+            Tag(name="rdf/foaf")
+
+    def test_rejects_colon(self):
+        with pytest.raises(ValueError):
+            Tag(name="grid:tag")
+
+    def test_rejects_ampersand(self):
+        with pytest.raises(ValueError):
+            Tag(name="a&b")
+
+    def test_rejects_unicode(self):
+        with pytest.raises(ValueError):
+            Tag(name="caf\u00e9")
+
 
 class TestTagEquality:
     def test_equal_tags(self):

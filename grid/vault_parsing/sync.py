@@ -2,7 +2,11 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from grid.note_modeling import Note
-from grid.vault_parsing.wiki_links import AmbiguousLink, extract_wiki_links
+from grid.vault_parsing.wiki_links import (
+    AmbiguousLink,
+    MalformedLink,
+    extract_wiki_links,
+)
 
 
 @dataclass(frozen=True)
@@ -10,6 +14,7 @@ class SyncResult:
     note: Note
     changed: bool
     ambiguous: tuple[AmbiguousLink, ...]
+    malformed: tuple[MalformedLink, ...]
 
 
 def sync(note: Note, now: datetime | None = None) -> SyncResult:
@@ -17,7 +22,12 @@ def sync(note: Note, now: datetime | None = None) -> SyncResult:
     new_links = tuple(parse_result.links)
     changed = new_links != note.links
     if not changed:
-        return SyncResult(note=note, changed=False, ambiguous=parse_result.ambiguous)
+        return SyncResult(
+            note=note,
+            changed=False,
+            ambiguous=parse_result.ambiguous,
+            malformed=parse_result.malformed,
+        )
     updated = Note(
         id=note.id,
         title=note.title,
@@ -28,4 +38,9 @@ def sync(note: Note, now: datetime | None = None) -> SyncResult:
         links=new_links,
         body=note.body,
     )
-    return SyncResult(note=updated, changed=True, ambiguous=parse_result.ambiguous)
+    return SyncResult(
+        note=updated,
+        changed=True,
+        ambiguous=parse_result.ambiguous,
+        malformed=parse_result.malformed,
+    )

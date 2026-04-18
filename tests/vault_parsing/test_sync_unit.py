@@ -91,3 +91,22 @@ class TestSyncAmbiguous:
         note = make_note(body="[[20260101120000]]")
         result = sync(note, now=LATER)
         assert result.changed
+
+
+class TestSyncMalformed:
+    def test_surfaces_malformed_links(self):
+        note = make_note(body="[[see-also::20260101120000]]")
+        result = sync(note, now=LATER)
+        assert len(result.malformed) == 1
+        assert result.malformed[0].raw == "[[see-also::20260101120000]]"
+
+    def test_no_malformed_for_valid_links(self):
+        note = make_note(body="[[related::20260101120000]]")
+        result = sync(note, now=LATER)
+        assert result.malformed == ()
+
+    def test_malformed_surfaces_even_when_unchanged(self):
+        note = make_note(body="[[see-also::20260101120000]]", links=())
+        result = sync(note, now=LATER)
+        assert not result.changed
+        assert len(result.malformed) == 1

@@ -44,6 +44,12 @@ Three supported formats only:
 
 `[[ID|label]]` (label without type) is **not supported** — if you want a label, specify the type.
 
+Type grammar is `\w+` (letters, digits, underscore) — camelCase convention, no hyphens. This matches idiomatic RDF local-name style and keeps body-text type identical to the RDF predicate.
+
+### Malformed detection
+
+`extract_wiki_links` also returns a `malformed` tuple alongside `links` and `ambiguous`. A bracketed run that contains a 14-digit ID **and** a `::` separator but fails the strict grammar (e.g. `[[see-also::20260409221400]]` with a hyphenated type) is captured as malformed so the caller can surface a warning rather than silently discard the user's intent. Brackets that don't look like wiki-link attempts at all (e.g. `[[notanid]]`) are ignored.
+
 ---
 
 ## Sync Logic

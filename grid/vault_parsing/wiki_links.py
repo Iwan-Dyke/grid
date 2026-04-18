@@ -3,7 +3,9 @@ from dataclasses import dataclass
 
 from grid.note_modeling import Link
 
-WIKI_LINK_PATTERN = re.compile(r"\[\[(?:(\w+)::)?(\d{14})(?:\|(.+?))?\]\]")
+WIKI_LINK_PATTERN = re.compile(r"\[\[([^\[\]]+?)\]\]")
+STRICT_CONTENT_PATTERN = re.compile(r"^(?:(\w+)::)?(\d{14})(?:\|(.+))?$")
+ID_PATTERN = re.compile(r"\d{14}")
 
 
 @dataclass(frozen=True)
@@ -14,19 +16,34 @@ class AmbiguousLink:
 
 
 @dataclass(frozen=True)
+class MalformedLink:
+    raw: str
+
+
+@dataclass(frozen=True)
 class ParseResult:
     links: tuple[Link, ...]
     ambiguous: tuple[AmbiguousLink, ...]
+    malformed: tuple[MalformedLink, ...]
 
 
 def extract_wiki_links(body: str) -> ParseResult:
     seen = set()
     links = []
     ambiguous = []
+    malformed = []
     for match in WIKI_LINK_PATTERN.finditer(body):
-        link_type = match.group(1)
-        target_id = match.group(2)
-        label = match.group(3)
+        content = match.group(1)
+        strict = STRICT_CONTENT_PATTERN.fullmatch(content)
+
+        if not strict:
+            if "::" in content and ID_PATTERN.search(content):
+                malformed.append(MalformedLink(raw=match.group(0)))
+            continue
+
+        link_type = strict.group(1)
+        target_id = strict.group(2)
+        label = strict.group(3)
 
         if label and not link_type:
             ambiguous.append(AmbiguousLink(
@@ -50,4 +67,8 @@ def extract_wiki_links(body: str) -> ParseResult:
                 link_type=resolved_type,
                 label=resolved_label,
             ))
-    return ParseResult(links=tuple(links), ambiguous=tuple(ambiguous))
+    return ParseResult(
+        links=tuple(links),
+        ambiguous=tuple(ambiguous),
+        malformed=tuple(malformed),
+    )

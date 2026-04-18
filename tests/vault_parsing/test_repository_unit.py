@@ -150,6 +150,21 @@ class TestExists:
         repo = MarkdownFileRepository(tmp_path)
         assert not repo.exists("99999999999999")
 
+    def test_exists_populates_index_for_fresh_repo(self, tmp_path):
+        written = MarkdownFileRepository(tmp_path)
+        written.save(make_note())
+        fresh = MarkdownFileRepository(tmp_path)
+        assert fresh.exists("20260409221400")
+        assert "20260409221400" in fresh._index
+
+
+class TestAtomicSave:
+    def test_no_tmp_file_left_behind(self, tmp_path):
+        repo = MarkdownFileRepository(tmp_path)
+        repo.save(make_note())
+        leftovers = list(tmp_path.glob("*.tmp"))
+        assert leftovers == []
+
 
 class TestDuplicateId:
     def test_load_all_raises_on_duplicate(self, tmp_path):

@@ -31,9 +31,12 @@ All dependencies must be open source with a permissive license (MIT, BSD, Apache
 
 ```python
 def load_graph(repo: NoteRepository) -> Graph: ...
+def load_note(repo: NoteRepository, note_id: str) -> Note: ...
 ```
 
-Loads all notes via `repo.load_all()`, builds and returns an in-memory `Graph`. Caller is responsible for creating the `MarkdownFileRepository` and passing it in.
+`load_graph` loads all notes via `repo.load_all()`, runs `sync` on each, writes back any note that changed, and returns the `Graph` built from the reconciled notes. `load_note` is the single-note equivalent: parse → sync → persist-if-changed → return.
+
+Every read path that produces a `Note` for consumers (CLI, web, RDF projection) goes through these two entry points, guaranteeing that in-memory notes always reflect body truth and that frontmatter on disk converges toward it. `vault_parsing.parse_note` remains a pure parser and is never called directly by other modules. Caller is responsible for creating the `MarkdownFileRepository` and passing it in.
 
 ### Search
 

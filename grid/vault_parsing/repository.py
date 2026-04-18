@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from grid.note_modeling import Note
@@ -33,12 +34,15 @@ class MarkdownFileRepository:
     def save(self, note: Note) -> None:
         filename = generate_filename(note.id, note.title)
         path = self._vault_path / filename
+        tmp = path.parent / f"{path.name}.tmp"
+
+        tmp.write_text(serialize_note(note))
+        os.replace(tmp, path)
 
         old_path = self._index.get(note.id)
         if old_path and old_path != path and old_path.exists():
             old_path.unlink()
 
-        path.write_text(serialize_note(note))
         self._index[note.id] = path
 
     def delete(self, note_id: str) -> None:
@@ -49,7 +53,10 @@ class MarkdownFileRepository:
     def exists(self, note_id: str) -> bool:
         if note_id in self._index:
             return True
-        return any(self._vault_path.glob(f"{note_id}-*.md"))
+        for path in self._vault_path.glob(f"{note_id}-*.md"):
+            self._index[note_id] = path
+            return True
+        return False
 
     def _resolve(self, note_id: str) -> Path:
         if note_id in self._index:

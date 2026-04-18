@@ -19,9 +19,22 @@ class TestParseDateTime:
         result = parse_datetime("2026-04-09T22:14:00+00:00")
         assert result == datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)
 
-    def test_handles_datetime_with_tz(self):
+    def test_handles_datetime_with_utc_tz(self):
         dt = datetime(2026, 4, 9, 22, 14, 0, tzinfo=UTC)
-        assert parse_datetime(dt) is dt
+        assert parse_datetime(dt) == dt
+
+    def test_converts_non_utc_datetime_to_utc(self):
+        from datetime import timezone, timedelta
+        plus_two = timezone(timedelta(hours=2))
+        dt = datetime(2026, 4, 9, 22, 14, 0, tzinfo=plus_two)
+        result = parse_datetime(dt)
+        assert result == datetime(2026, 4, 9, 20, 14, 0, tzinfo=UTC)
+        assert result.tzinfo is UTC
+
+    def test_converts_non_utc_iso_string_to_utc(self):
+        result = parse_datetime("2026-04-09T22:14:00+02:00")
+        assert result == datetime(2026, 4, 9, 20, 14, 0, tzinfo=UTC)
+        assert result.tzinfo is UTC
 
     def test_adds_utc_to_naive_datetime(self):
         naive = datetime(2026, 4, 9, 22, 14, 0)

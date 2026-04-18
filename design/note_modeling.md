@@ -46,7 +46,7 @@ class Link:
 
 ### Tag
 
-Dataclass to allow validation in `__post_init__` (e.g. lowercase, no spaces, max length).
+Dataclass to allow validation in `__post_init__`.
 
 ```python
 @dataclass(frozen=True)
@@ -54,17 +54,23 @@ class Tag:
     name: str
 ```
 
+Validation rules: trimmed of whitespace, lowercased, and must match `^[a-z0-9_-]+$` (letters, digits, hyphen, underscore only). Max 50 chars. URI-safety is enforced at construction time so `rdf_projection` can mint `grid:tag-{name}` IRIs without escaping.
+
 ### Triple
 
 Domain-level RDF triple representation. Keeps the `GraphQuery` protocol independent of rdflib.
 
 ```python
+class IRI(str): ...
+
 @dataclass(frozen=True)
 class Triple:
     subject: str
     predicate: str
     object: str
 ```
+
+`IRI` is a marker subclass of `str`. Producers (e.g. `rdf_projection.project`) wrap any string that denotes an IRI in `IRI(...)`; plain `str` objects are treated as literals. Adapters use `isinstance(triple.object, IRI)` to decide IRI-vs-literal unambiguously — no heuristic sniffing. `IRI` compares equal to its underlying string so string-based equality and dict/set membership continue to work transparently for existing callers and tests.
 
 ---
 

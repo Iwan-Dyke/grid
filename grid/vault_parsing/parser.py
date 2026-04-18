@@ -67,5 +67,8 @@ def parse_datetime(value: str | datetime) -> datetime:
     if isinstance(value, datetime):
         if value.tzinfo is None:
             return value.replace(tzinfo=UTC)
-        return value
-    return datetime.fromisoformat(str(value)).replace(tzinfo=UTC)
+        return value.astimezone(UTC)
+    parsed = datetime.fromisoformat(str(value))
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)

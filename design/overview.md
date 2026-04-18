@@ -105,6 +105,8 @@ Supported wiki-link formats in body (synced to frontmatter):
 - `grid link` inserts wiki-links into the note body (not directly into frontmatter)
 - `grid sync` parses wiki-links from body and fully replaces the `links:` array in frontmatter
 - Flow is always: body → sync → frontmatter (body is the single source of truth for links)
+- `service` auto-reconciles on load: every note returned to callers has already been synced, and if sync changed the note the updated version is written back to disk. `grid sync` remains the explicit batch command but is no longer required for consumers (CLI, web, RDF projection) to observe current truth
+- `vault_parsing.parse_note` stays a pure parser — it returns whatever is on disk. The orchestration (parse → sync → persist-if-changed) lives in `service`
 
 ### Visualisation
 

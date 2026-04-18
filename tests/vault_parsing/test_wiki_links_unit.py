@@ -93,7 +93,38 @@ class TestEdgeCases:
     def test_malformed_id_ignored(self):
         assert extract_wiki_links("[[notanid]]").links == ()
 
+    def test_non_link_bracket_not_flagged_malformed(self):
+        result = extract_wiki_links("[[notanid]]")
+        assert result.malformed == ()
+
     def test_link_in_multiline_body(self):
         body = "First line\n\nSee [[20260409221400]]\n\nLast line"
         result = extract_wiki_links(body)
         assert len(result.links) == 1
+
+
+class TestMalformed:
+    def test_hyphenated_type_is_malformed(self):
+        result = extract_wiki_links("[[see-also::20260409221400]]")
+        assert result.links == ()
+        assert len(result.malformed) == 1
+        assert result.malformed[0].raw == "[[see-also::20260409221400]]"
+
+    def test_space_in_type_is_malformed(self):
+        result = extract_wiki_links("[[see also::20260409221400]]")
+        assert result.links == ()
+        assert len(result.malformed) == 1
+
+    def test_valid_typed_link_not_flagged_malformed(self):
+        result = extract_wiki_links("[[related::20260409221400]]")
+        assert result.malformed == ()
+
+    def test_bare_brackets_without_id_not_flagged(self):
+        result = extract_wiki_links("[[see-also::notanid]]")
+        assert result.malformed == ()
+
+    def test_mixed_valid_and_malformed(self):
+        body = "[[related::20260409221400]] and [[see-also::20260101120000]]"
+        result = extract_wiki_links(body)
+        assert len(result.links) == 1
+        assert len(result.malformed) == 1
