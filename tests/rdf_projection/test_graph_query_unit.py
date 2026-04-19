@@ -38,6 +38,19 @@ class TestSerialize:
         output = q.serialize(format="nt")
         assert "20260409221400" in output
 
+    def test_datetime_literal_serialized_with_xsd_datatype(self):
+        q = RDFlibGraphQuery()
+        q.build([make_note()])
+        output = q.serialize(format="nt")
+        assert "http://www.w3.org/2001/XMLSchema#dateTime" in output
+
+    def test_title_literal_has_no_datatype(self):
+        q = RDFlibGraphQuery()
+        q.build([make_note(title="Plain Title")])
+        output = q.serialize(format="nt")
+        assert '"Plain Title"' in output
+        assert '"Plain Title"^^' not in output
+
 
 class TestSparql:
     def test_select_notes(self):

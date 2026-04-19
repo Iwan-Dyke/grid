@@ -43,6 +43,29 @@ class TestNoteProjection:
         assert f"{DCTERMS}created" in predicates
         assert f"{DCTERMS}modified" in predicates
 
+    def test_created_is_typed_literal_with_datetime(self):
+        from grid.note_modeling import TypedLiteral
+
+        triples = project([make_note()], GRID)
+        created = next(t for t in triples if t.predicate == f"{DCTERMS}created")
+        assert isinstance(created.object, TypedLiteral)
+        assert created.object.datatype.endswith("#dateTime")
+
+    def test_modified_is_typed_literal_with_datetime(self):
+        from grid.note_modeling import TypedLiteral
+
+        triples = project([make_note()], GRID)
+        modified = next(t for t in triples if t.predicate == f"{DCTERMS}modified")
+        assert isinstance(modified.object, TypedLiteral)
+        assert modified.object.datatype.endswith("#dateTime")
+
+    def test_title_is_plain_str_not_typed_literal(self):
+        from grid.note_modeling import TypedLiteral
+
+        triples = project([make_note()], GRID)
+        title = next(t for t in triples if t.predicate == f"{DCTERMS}title")
+        assert not isinstance(title.object, TypedLiteral)
+
 
 class TestTagProjection:
     def test_emits_skos_concept(self):

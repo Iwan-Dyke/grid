@@ -68,6 +68,26 @@ class TestLinkTypeValidation:
             link = Link(target_id="20260409221400", link_type=t)
             assert link.link_type == t
 
+    def test_rejects_hyphen(self):
+        with pytest.raises(ValueError):
+            Link(target_id="20260409221400", link_type="see-also")
+
+    def test_rejects_double_colon(self):
+        with pytest.raises(ValueError):
+            Link(target_id="20260409221400", link_type="see::also")
+
+    def test_rejects_space(self):
+        with pytest.raises(ValueError):
+            Link(target_id="20260409221400", link_type="see also")
+
+    def test_accepts_underscore(self):
+        link = Link(target_id="20260409221400", link_type="see_also")
+        assert link.link_type == "see_also"
+
+    def test_accepts_digits(self):
+        link = Link(target_id="20260409221400", link_type="refersTo2")
+        assert link.link_type == "refersTo2"
+
 
 class TestLinkEquality:
     def test_equal_links(self):

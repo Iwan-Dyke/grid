@@ -1,13 +1,13 @@
-from grid.note_modeling import IRI, Link, Note, Tag, Triple
-from grid.rdf_projection.namespaces import DCTERMS, RDF, RDFS, SCHEMA, SKOS
+from grid.note_modeling import IRI, Link, Note, Tag, Triple, TypedLiteral
+from grid.rdf_projection.namespaces import DCTERMS, RDF, RDFS, SCHEMA, SKOS, XSD
 
 
 RDF_TYPE = IRI(f"{RDF}type")
+XSD_DATETIME = f"{XSD}dateTime"
 
 
 SYMMETRIC_PREDICATES = {"related"}
 INVERSE_PREDICATES = {"broader": "narrower", "narrower": "broader"}
-RESERVED_LINK_TYPES = {"linksTo", "related", "broader", "narrower", "seeAlso"}
 
 
 def project(notes: list[Note], grid_uri: str) -> list[Triple]:
@@ -36,8 +36,16 @@ def _note_triples(note: Note, grid_uri: str) -> list[Triple]:
         Triple(subject, RDF_TYPE, IRI(f"{SCHEMA}Article")),
         Triple(subject, IRI(f"{DCTERMS}identifier"), note.id),
         Triple(subject, IRI(f"{DCTERMS}title"), note.title),
-        Triple(subject, IRI(f"{DCTERMS}created"), note.created.isoformat()),
-        Triple(subject, IRI(f"{DCTERMS}modified"), note.modified.isoformat()),
+        Triple(
+            subject,
+            IRI(f"{DCTERMS}created"),
+            TypedLiteral(note.created.isoformat(), XSD_DATETIME),
+        ),
+        Triple(
+            subject,
+            IRI(f"{DCTERMS}modified"),
+            TypedLiteral(note.modified.isoformat(), XSD_DATETIME),
+        ),
     ]
 
 

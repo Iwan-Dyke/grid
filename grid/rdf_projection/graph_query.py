@@ -1,17 +1,8 @@
 from rdflib import Graph as RDFGraph, Literal, Namespace, URIRef
 
-from grid.note_modeling import IRI, Note, Triple
-from grid.rdf_projection.namespaces import (
-    BUILTIN_PREFIXES,
-    DEFAULT_GRID_URI,
-    XSD,
-)
+from grid.note_modeling import IRI, Note, Triple, TypedLiteral
+from grid.rdf_projection.namespaces import BUILTIN_PREFIXES, DEFAULT_GRID_URI
 from grid.rdf_projection.projection import project
-
-DATETIME_PREDICATES = {
-    "http://purl.org/dc/terms/created",
-    "http://purl.org/dc/terms/modified",
-}
 
 
 class RDFlibGraphQuery:
@@ -64,8 +55,12 @@ class RDFlibGraphQuery:
         predicate = URIRef(triple.predicate)
         if isinstance(triple.object, IRI):
             return (subject, predicate, URIRef(triple.object))
-        if triple.predicate in DATETIME_PREDICATES:
-            return (subject, predicate, Literal(triple.object, datatype=XSD.dateTime))
+        if isinstance(triple.object, TypedLiteral):
+            return (
+                subject,
+                predicate,
+                Literal(str(triple.object), datatype=URIRef(triple.object.datatype)),
+            )
         return (subject, predicate, Literal(triple.object))
 
 

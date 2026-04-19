@@ -13,6 +13,23 @@ class IRI(str):
     __slots__ = ()
 
 
+class TypedLiteral(str):
+    """Marker subclass for literal strings that carry an xsd datatype.
+
+    Adapters use this to mint rdflib `Literal` with the correct datatype
+    rather than keying off the predicate IRI. The producer declares intent
+    at projection time; downstream code does not have to know which
+    predicates take which datatypes.
+    """
+
+    __slots__ = ("datatype",)
+
+    def __new__(cls, value: str, datatype: str) -> "TypedLiteral":
+        instance = super().__new__(cls, value)
+        instance.datatype = datatype
+        return instance
+
+
 @dataclass(frozen=True)
 class Triple:
     subject: str

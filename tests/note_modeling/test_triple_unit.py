@@ -1,6 +1,6 @@
 import pytest
 
-from grid.note_modeling.triple import Triple
+from grid.note_modeling.triple import IRI, Triple, TypedLiteral
 
 
 class TestTripleCreation:
@@ -40,3 +40,38 @@ class TestTripleEquality:
         a = Triple(subject="grid:123", predicate="grid:linksTo", object="grid:456")
         b = Triple(subject="grid:789", predicate="grid:linksTo", object="grid:456")
         assert a != b
+
+
+class TestIRI:
+    def test_is_str_subclass(self):
+        assert isinstance(IRI("http://example.com"), str)
+
+    def test_equals_underlying_string(self):
+        assert IRI("http://example.com") == "http://example.com"
+
+    def test_isinstance_check_distinguishes_from_str(self):
+        assert isinstance(IRI("x"), IRI)
+        assert not isinstance("x", IRI)
+
+
+class TestTypedLiteral:
+    def test_is_str_subclass(self):
+        assert isinstance(TypedLiteral("2026-04-09", "http://xsd/date"), str)
+
+    def test_stores_datatype(self):
+        tl = TypedLiteral("2026-04-09T22:14:00", "http://xsd/dateTime")
+        assert tl.datatype == "http://xsd/dateTime"
+
+    def test_equals_underlying_string(self):
+        tl = TypedLiteral("2026-04-09", "http://xsd/date")
+        assert tl == "2026-04-09"
+
+    def test_isinstance_check_distinguishes_from_str(self):
+        tl = TypedLiteral("x", "http://xsd/string")
+        assert isinstance(tl, TypedLiteral)
+        assert not isinstance("x", TypedLiteral)
+
+    def test_usable_as_triple_object(self):
+        tl = TypedLiteral("2026-04-09", "http://xsd/date")
+        triple = Triple(subject="grid:123", predicate="dcterms:date", object=tl)
+        assert triple.object.datatype == "http://xsd/date"
