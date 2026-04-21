@@ -70,9 +70,7 @@ class TestGraphTraversalUnknownId:
 class TestGraphOutgoing:
     def test_returns_linked_notes(self):
         g = Graph()
-        g.add(make_note("A", links=(
-            Link(target_id=IDS["B"], link_type="linksTo"),
-        )))
+        g.add(make_note("A", links=(Link(target_id=IDS["B"], link_type="linksTo"),)))
         g.add(make_note("B"))
         result = g.outgoing(IDS["A"])
         assert len(result) == 1
@@ -80,9 +78,7 @@ class TestGraphOutgoing:
 
     def test_skips_missing_targets(self):
         g = Graph()
-        g.add(make_note("A", links=(
-            Link(target_id=IDS["B"], link_type="linksTo"),
-        )))
+        g.add(make_note("A", links=(Link(target_id=IDS["B"], link_type="linksTo"),)))
         result = g.outgoing(IDS["A"])
         assert result == []
 
@@ -95,9 +91,7 @@ class TestGraphOutgoing:
 class TestGraphIncoming:
     def test_returns_notes_linking_here(self):
         g = Graph()
-        g.add(make_note("A", links=(
-            Link(target_id=IDS["B"], link_type="linksTo"),
-        )))
+        g.add(make_note("A", links=(Link(target_id=IDS["B"], link_type="linksTo"),)))
         g.add(make_note("B"))
         result = g.incoming(IDS["B"])
         assert len(result) == 1
@@ -113,25 +107,17 @@ class TestGraphIncoming:
 class TestGraphNeighbors:
     def test_union_of_outgoing_and_incoming(self):
         g = Graph()
-        g.add(make_note("A", links=(
-            Link(target_id=IDS["B"], link_type="linksTo"),
-        )))
+        g.add(make_note("A", links=(Link(target_id=IDS["B"], link_type="linksTo"),)))
         g.add(make_note("B"))
-        g.add(make_note("C", links=(
-            Link(target_id=IDS["A"], link_type="linksTo"),
-        )))
+        g.add(make_note("C", links=(Link(target_id=IDS["A"], link_type="linksTo"),)))
         result = g.neighbors(IDS["A"])
         ids = {n.id for n in result}
         assert ids == {IDS["B"], IDS["C"]}
 
     def test_no_duplicates(self):
         g = Graph()
-        g.add(make_note("A", links=(
-            Link(target_id=IDS["B"], link_type="linksTo"),
-        )))
-        g.add(make_note("B", links=(
-            Link(target_id=IDS["A"], link_type="related"),
-        )))
+        g.add(make_note("A", links=(Link(target_id=IDS["B"], link_type="linksTo"),)))
+        g.add(make_note("B", links=(Link(target_id=IDS["A"], link_type="related"),)))
         result = g.neighbors(IDS["A"])
         ids = [n.id for n in result]
         assert len(ids) == len(set(ids))

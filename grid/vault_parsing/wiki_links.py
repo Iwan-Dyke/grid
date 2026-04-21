@@ -46,11 +46,13 @@ def extract_wiki_links(body: str) -> ParseResult:
         label = strict.group(3)
 
         if label and not link_type:
-            ambiguous.append(AmbiguousLink(
-                target_id=target_id,
-                label=label,
-                raw=match.group(0),
-            ))
+            ambiguous.append(
+                AmbiguousLink(
+                    target_id=target_id,
+                    label=label,
+                    raw=match.group(0),
+                )
+            )
             key = (target_id, "linksTo", None)
             if key not in seen:
                 seen.add(key)
@@ -62,11 +64,13 @@ def extract_wiki_links(body: str) -> ParseResult:
         key = (target_id, resolved_type, resolved_label)
         if key not in seen:
             seen.add(key)
-            links.append(Link(
-                target_id=target_id,
-                link_type=resolved_type,
-                label=resolved_label,
-            ))
+            links.append(
+                Link(
+                    target_id=target_id,
+                    link_type=resolved_type,
+                    label=resolved_label,
+                )
+            )
     return ParseResult(
         links=tuple(links),
         ambiguous=tuple(ambiguous),

@@ -33,7 +33,9 @@ def test_tag_whitespace_stripped():
     pass
 
 
-@scenario("features/tag.feature", "Interior whitespace is still rejected after stripping")
+@scenario(
+    "features/tag.feature", "Interior whitespace is still rejected after stripping"
+)
 def test_tag_interior_whitespace_rejected():
     pass
 

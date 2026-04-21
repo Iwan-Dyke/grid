@@ -25,6 +25,7 @@ class TestParseDateTime:
 
     def test_converts_non_utc_datetime_to_utc(self):
         from datetime import timezone, timedelta
+
         plus_two = timezone(timedelta(hours=2))
         dt = datetime(2026, 4, 9, 22, 14, 0, tzinfo=plus_two)
         result = parse_datetime(dt)
@@ -67,7 +68,9 @@ class TestDeserializeLink:
         assert link == Link(target_id="20260409221400", link_type="related")
 
     def test_with_label(self):
-        link = deserialize_link({"id": "20260409221400", "type": "related", "label": "see this"})
+        link = deserialize_link(
+            {"id": "20260409221400", "type": "related", "label": "see this"}
+        )
         assert link.label == "see this"
 
     def test_round_trip(self):

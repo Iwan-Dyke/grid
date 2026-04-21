@@ -53,7 +53,9 @@ def check_count(result, count):
     assert len(result.links) == count
 
 
-@then(parsers.parse('the link has target "{target}" and type "{link_type}" and no label'))
+@then(
+    parsers.parse('the link has target "{target}" and type "{link_type}" and no label')
+)
 def check_link_no_label(result, target, link_type):
     link = result.links[0]
     assert link.target_id == target
@@ -61,7 +63,11 @@ def check_link_no_label(result, target, link_type):
     assert link.label is None
 
 
-@then(parsers.parse('the link has target "{target}" and type "{link_type}" and label "{label}"'))
+@then(
+    parsers.parse(
+        'the link has target "{target}" and type "{link_type}" and label "{label}"'
+    )
+)
 def check_link_with_label(result, target, link_type, label):
     link = result.links[0]
     assert link.target_id == target

@@ -7,7 +7,10 @@ from grid.vault_parsing import MarkdownFileRepository
 from tests.service.conftest import make_note
 
 
-@scenario("features/service.feature", "Loading the vault reconciles body links into frontmatter")
+@scenario(
+    "features/service.feature",
+    "Loading the vault reconciles body links into frontmatter",
+)
 def test_load_reconciles():
     pass
 
@@ -17,7 +20,9 @@ def test_create_persists():
     pass
 
 
-@scenario("features/service.feature", "Adding a link appends to body and updates frontmatter")
+@scenario(
+    "features/service.feature", "Adding a link appends to body and updates frontmatter"
+)
 def test_add_link_updates_both():
     pass
 
@@ -80,17 +85,25 @@ def graph_with_titled_note(title):
 )
 def graph_with_mixed_notes():
     g = Graph()
-    g.add(make_note(
-        id="20260409221400", tags=(Tag(name="rdf"),), note_type="reference"
-    ))
-    g.add(make_note(
-        id="20260409221401", title="A",
-        tags=(Tag(name="python"),), note_type="reference",
-    ))
-    g.add(make_note(
-        id="20260409221402", title="B",
-        tags=(Tag(name="rdf"),), note_type="note",
-    ))
+    g.add(
+        make_note(id="20260409221400", tags=(Tag(name="rdf"),), note_type="reference")
+    )
+    g.add(
+        make_note(
+            id="20260409221401",
+            title="A",
+            tags=(Tag(name="python"),),
+            note_type="reference",
+        )
+    )
+    g.add(
+        make_note(
+            id="20260409221402",
+            title="B",
+            tags=(Tag(name="rdf"),),
+            note_type="note",
+        )
+    )
     return g
 
 
@@ -183,9 +196,7 @@ def links_contain(updated, target):
 @then("every returned note is reconciled")
 def every_note_reconciled(synced):
     for note in synced:
-        assert note.links == () or all(
-            link.target_id.isdigit() for link in note.links
-        )
+        assert note.links == () or all(link.target_id.isdigit() for link in note.links)
 
 
 @then("the matching note is returned")

@@ -32,9 +32,11 @@ class TestSaveAndLoad:
 
     def test_preserves_links(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
-        note = make_note(links=(
-            Link(target_id="20260101120000", link_type="related", label="see this"),
-        ))
+        note = make_note(
+            links=(
+                Link(target_id="20260101120000", link_type="related", label="see this"),
+            )
+        )
         repo.save(note)
         loaded = repo.load(note.id)
         assert loaded.links == note.links

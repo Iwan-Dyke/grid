@@ -13,6 +13,8 @@ dependencies = [
     "python-slugify>=8.0.0",
     "thefuzz>=0.22.0",
     "rich>=13.0.0",
+    "platformdirs>=4",
+    "tomli-w>=1.0",
 ]
 
 [project.scripts]

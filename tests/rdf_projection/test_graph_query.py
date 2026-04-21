@@ -5,17 +5,23 @@ from grid.rdf_projection import RDFlibGraphQuery
 from tests.rdf_projection.conftest import make_note
 
 
-@scenario("features/graph_query.feature", "SPARQL query with built-in prefix finds notes")
+@scenario(
+    "features/graph_query.feature", "SPARQL query with built-in prefix finds notes"
+)
 def test_sparql_prefix_auto_injected():
     pass
 
 
-@scenario("features/graph_query.feature", "Serializing to Turtle includes the note identifier")
+@scenario(
+    "features/graph_query.feature", "Serializing to Turtle includes the note identifier"
+)
 def test_serialize_turtle():
     pass
 
 
-@scenario("features/graph_query.feature", "Custom grid URI is used in the serialized output")
+@scenario(
+    "features/graph_query.feature", "Custom grid URI is used in the serialized output"
+)
 def test_custom_grid_uri():
     pass
 
@@ -47,9 +53,7 @@ def query_from_note_with_id(note_id):
 
 
 @given(
-    parsers.parse(
-        'a graph query using grid URI "{grid_uri}" built from 1 note'
-    ),
+    parsers.parse('a graph query using grid URI "{grid_uri}" built from 1 note'),
     target_fixture="query",
 )
 def query_custom_grid_uri(grid_uri):
@@ -59,9 +63,7 @@ def query_custom_grid_uri(grid_uri):
 
 
 @given(
-    parsers.parse(
-        'a graph query with extra namespace "{prefix}" bound to "{uri}"'
-    ),
+    parsers.parse('a graph query with extra namespace "{prefix}" bound to "{uri}"'),
     target_fixture="query",
 )
 def query_with_extra_namespace(prefix, uri):

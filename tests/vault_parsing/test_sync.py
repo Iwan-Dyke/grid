@@ -8,7 +8,9 @@ from grid.vault_parsing.sync import sync
 from tests.vault_parsing.conftest import LATER
 
 
-@scenario("features/sync.feature", "Links extracted from body replace frontmatter links")
+@scenario(
+    "features/sync.feature", "Links extracted from body replace frontmatter links"
+)
 def test_sync_adds_links():
     pass
 

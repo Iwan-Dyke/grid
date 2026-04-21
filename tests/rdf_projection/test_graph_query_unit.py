@@ -55,10 +55,12 @@ class TestSerialize:
 class TestSparql:
     def test_select_notes(self):
         q = RDFlibGraphQuery()
-        q.build([
-            make_note(id="20260409221400", title="A"),
-            make_note(id="20260101120000", title="B"),
-        ])
+        q.build(
+            [
+                make_note(id="20260409221400", title="A"),
+                make_note(id="20260101120000", title="B"),
+            ]
+        )
         results = q.query("SELECT ?s WHERE { ?s a grid:Note } ORDER BY ?s")
         ids = [r["s"] for r in results]
         assert f"{DEFAULT_GRID_URI}20260101120000" in ids
@@ -83,9 +85,7 @@ class TestSparql:
     def test_query_literal_returns_python_value(self):
         q = RDFlibGraphQuery()
         q.build([make_note(id="20260409221400", title="Hello")])
-        results = q.query(
-            "SELECT ?t WHERE { ?s <http://purl.org/dc/terms/title> ?t }"
-        )
+        results = q.query("SELECT ?t WHERE { ?s <http://purl.org/dc/terms/title> ?t }")
         assert results[0]["t"] == "Hello"
 
 
@@ -137,9 +137,7 @@ class TestIRIMarker:
     def test_title_containing_url_is_queryable_as_literal(self):
         q = RDFlibGraphQuery()
         q.build([make_note(id="20260409221400", title="See http://example.com")])
-        results = q.query(
-            "SELECT ?t WHERE { ?s <http://purl.org/dc/terms/title> ?t }"
-        )
+        results = q.query("SELECT ?t WHERE { ?s <http://purl.org/dc/terms/title> ?t }")
         assert results[0]["t"] == "See http://example.com"
 
 
@@ -161,21 +159,21 @@ class TestProjectionIRIMarking:
         from grid.rdf_projection import project
 
         triples = project([make_note(title="Plain Title")], DEFAULT_GRID_URI)
-        title_triple = next(
-            t for t in triples if t.predicate.endswith("title")
-        )
+        title_triple = next(t for t in triples if t.predicate.endswith("title"))
         assert not isinstance(title_triple.object, IRI)
 
 
 class TestSymmetryInGraph:
     def test_related_link_queryable_from_either_side(self):
         q = RDFlibGraphQuery()
-        q.build([
-            make_note(
-                id="20260409221400",
-                links=(Link(target_id="20260101120000", link_type="related"),),
-            ),
-        ])
+        q.build(
+            [
+                make_note(
+                    id="20260409221400",
+                    links=(Link(target_id="20260101120000", link_type="related"),),
+                ),
+            ]
+        )
         forward = q.query(
             f"SELECT ?o WHERE {{ <{DEFAULT_GRID_URI}20260409221400> skos:related ?o }}"
         )

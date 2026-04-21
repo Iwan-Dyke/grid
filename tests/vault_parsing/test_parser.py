@@ -88,6 +88,6 @@ def check_parse_error(result):
     assert isinstance(result, NoteParseError)
 
 
-@then(parsers.parse("the loaded note's created timestamp is \"{expected}\""))
+@then(parsers.parse('the loaded note\'s created timestamp is "{expected}"'))
 def check_created(result, expected):
     assert result.created == datetime.fromisoformat(expected)

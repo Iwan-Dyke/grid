@@ -87,10 +87,15 @@ def empty_graph():
 @given('a graph where "A" links to "B" and "C"', target_fixture="graph")
 def graph_a_links_b_c():
     g = Graph()
-    g.add(make_note("A", links=(
-        Link(target_id=IDS["B"], link_type="linksTo"),
-        Link(target_id=IDS["C"], link_type="linksTo"),
-    )))
+    g.add(
+        make_note(
+            "A",
+            links=(
+                Link(target_id=IDS["B"], link_type="linksTo"),
+                Link(target_id=IDS["C"], link_type="linksTo"),
+            ),
+        )
+    )
     g.add(make_note("B"))
     g.add(make_note("C"))
     return g
@@ -102,13 +107,9 @@ def graph_a_links_b_c():
 )
 def graph_a_to_b_and_c_to_a():
     g = Graph()
-    g.add(make_note("A", links=(
-        Link(target_id=IDS["B"], link_type="linksTo"),
-    )))
+    g.add(make_note("A", links=(Link(target_id=IDS["B"], link_type="linksTo"),)))
     g.add(make_note("B"))
-    g.add(make_note("C", links=(
-        Link(target_id=IDS["A"], link_type="linksTo"),
-    )))
+    g.add(make_note("C", links=(Link(target_id=IDS["A"], link_type="linksTo"),)))
     return g
 
 

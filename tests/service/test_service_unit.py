@@ -134,17 +134,13 @@ class TestAddLink:
     def test_default_type_inserts_bare_wiki_link(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
         repo.save(make_note(body="some content"))
-        updated = service.add_link(
-            repo, "20260409221400", "20260101120000", "linksTo"
-        )
+        updated = service.add_link(repo, "20260409221400", "20260101120000", "linksTo")
         assert "[[20260101120000]]" in updated.body
 
     def test_typed_link_inserts_typed_syntax(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
         repo.save(make_note(body="some content"))
-        updated = service.add_link(
-            repo, "20260409221400", "20260101120000", "related"
-        )
+        updated = service.add_link(repo, "20260409221400", "20260101120000", "related")
         assert "[[related::20260101120000]]" in updated.body
 
     def test_labelled_link_inserts_full_syntax(self, tmp_path):
@@ -158,9 +154,7 @@ class TestAddLink:
     def test_link_syncs_into_frontmatter(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
         repo.save(make_note(body=""))
-        updated = service.add_link(
-            repo, "20260409221400", "20260101120000", "related"
-        )
+        updated = service.add_link(repo, "20260409221400", "20260101120000", "related")
         assert Link(target_id="20260101120000", link_type="related") in updated.links
 
     def test_persists_to_disk(self, tmp_path):
@@ -173,42 +167,32 @@ class TestAddLink:
     def test_appends_to_existing_body_with_separator(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
         repo.save(make_note(body="existing"))
-        updated = service.add_link(
-            repo, "20260409221400", "20260101120000", "linksTo"
-        )
+        updated = service.add_link(repo, "20260409221400", "20260101120000", "linksTo")
         assert updated.body.startswith("existing\n")
 
     def test_empty_body_no_leading_newline(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
         repo.save(make_note(body=""))
-        updated = service.add_link(
-            repo, "20260409221400", "20260101120000", "linksTo"
-        )
+        updated = service.add_link(repo, "20260409221400", "20260101120000", "linksTo")
         assert updated.body == "[[20260101120000]]\n"
 
     def test_body_ending_in_newline_no_double(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
         repo.save(make_note(body="existing\n"))
-        updated = service.add_link(
-            repo, "20260409221400", "20260101120000", "linksTo"
-        )
+        updated = service.add_link(repo, "20260409221400", "20260101120000", "linksTo")
         assert "existing\n\n[[" not in updated.body
         assert updated.body == "existing\n[[20260101120000]]\n"
 
     def test_bumps_modified(self, tmp_path, now, later):
         repo = MarkdownFileRepository(tmp_path)
         repo.save(make_note(body="", modified=now))
-        updated = service.add_link(
-            repo, "20260409221400", "20260101120000", "linksTo"
-        )
+        updated = service.add_link(repo, "20260409221400", "20260101120000", "linksTo")
         assert updated.modified > now
 
     def test_raises_for_missing_source(self, tmp_path):
         repo = MarkdownFileRepository(tmp_path)
         with pytest.raises(NoteNotFoundError):
-            service.add_link(
-                repo, "99999999999999", "20260101120000", "linksTo"
-            )
+            service.add_link(repo, "99999999999999", "20260101120000", "linksTo")
 
 
 class TestSyncNote:
@@ -286,16 +270,21 @@ class TestListNotes:
             id="20260409221400", tags=(Tag(name="rdf"),), note_type="reference"
         )
         wrong_tag = make_note(
-            id="20260409221401", title="A",
-            tags=(Tag(name="python"),), note_type="reference",
+            id="20260409221401",
+            title="A",
+            tags=(Tag(name="python"),),
+            note_type="reference",
         )
         wrong_type = make_note(
-            id="20260409221402", title="B",
-            tags=(Tag(name="rdf"),), note_type="note",
+            id="20260409221402",
+            title="B",
+            tags=(Tag(name="rdf"),),
+            note_type="note",
         )
         result = service.list_notes(
             _graph(match, wrong_tag, wrong_type),
-            tag="rdf", note_type="reference",
+            tag="rdf",
+            note_type="reference",
         )
         assert [n.id for n in result] == [match.id]
 
@@ -317,7 +306,8 @@ class TestSearch:
 
     def test_matches_on_body(self):
         match = make_note(
-            id="20260409221400", title="Misc",
+            id="20260409221400",
+            title="Misc",
             body="We write a lot of python here",
         )
         other = make_note(id="20260409221401", title="Other", body="nothing")
@@ -328,7 +318,8 @@ class TestSearch:
     def test_ranks_higher_scores_first(self):
         strong = make_note(id="20260409221400", title="Python Basics")
         weak = make_note(
-            id="20260409221401", title="Misc",
+            id="20260409221401",
+            title="Misc",
             body="mentions python once",
         )
         result = service.search(_graph(weak, strong), "python basics")

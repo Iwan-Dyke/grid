@@ -16,12 +16,17 @@ SOURCE_ID = "20260409221400"
 TARGET_ID = "20260101120000"
 
 
-@scenario("features/projection.feature", "Plain note emits rdf:type and identifier triples")
+@scenario(
+    "features/projection.feature", "Plain note emits rdf:type and identifier triples"
+)
 def test_plain_note():
     pass
 
 
-@scenario("features/projection.feature", "A tag yields a skos:Concept and dcterms:subject link")
+@scenario(
+    "features/projection.feature",
+    "A tag yields a skos:Concept and dcterms:subject link",
+)
 def test_tag_projection():
     pass
 
@@ -98,9 +103,7 @@ def check_schema_article(triples):
 
 @then(parsers.parse('a triple asserts the dcterms:title is "{title}"'))
 def check_title(triples, title):
-    assert any(
-        t.predicate == f"{DCTERMS}title" and t.object == title for t in triples
-    )
+    assert any(t.predicate == f"{DCTERMS}title" and t.object == title for t in triples)
 
 
 @then("a triple declares the tag is a skos:Concept")
@@ -120,45 +123,57 @@ def check_tag_subject(triples):
 
 @then("a grid:linksTo triple exists from source to target")
 def check_links_to_forward(triples):
-    assert Triple(f"{GRID}{SOURCE_ID}", f"{GRID}linksTo", f"{GRID}{TARGET_ID}") in triples
+    assert (
+        Triple(f"{GRID}{SOURCE_ID}", f"{GRID}linksTo", f"{GRID}{TARGET_ID}") in triples
+    )
 
 
 @then("no grid:linksTo triple exists from target to source")
 def check_links_to_no_reverse(triples):
-    assert Triple(f"{GRID}{TARGET_ID}", f"{GRID}linksTo", f"{GRID}{SOURCE_ID}") not in triples
+    assert (
+        Triple(f"{GRID}{TARGET_ID}", f"{GRID}linksTo", f"{GRID}{SOURCE_ID}")
+        not in triples
+    )
 
 
 @then("a skos:related triple exists from source to target")
 def check_related_forward(triples):
-    assert Triple(f"{GRID}{SOURCE_ID}", f"{SKOS}related", f"{GRID}{TARGET_ID}") in triples
+    assert (
+        Triple(f"{GRID}{SOURCE_ID}", f"{SKOS}related", f"{GRID}{TARGET_ID}") in triples
+    )
 
 
 @then("a skos:related triple exists from target to source")
 def check_related_reverse(triples):
-    assert Triple(f"{GRID}{TARGET_ID}", f"{SKOS}related", f"{GRID}{SOURCE_ID}") in triples
+    assert (
+        Triple(f"{GRID}{TARGET_ID}", f"{SKOS}related", f"{GRID}{SOURCE_ID}") in triples
+    )
 
 
 @then("a skos:broader triple exists from source to target")
 def check_broader_forward(triples):
-    assert Triple(f"{GRID}{SOURCE_ID}", f"{SKOS}broader", f"{GRID}{TARGET_ID}") in triples
+    assert (
+        Triple(f"{GRID}{SOURCE_ID}", f"{SKOS}broader", f"{GRID}{TARGET_ID}") in triples
+    )
 
 
 @then("a skos:narrower triple exists from target to source")
 def check_narrower_inverse(triples):
-    assert Triple(f"{GRID}{TARGET_ID}", f"{SKOS}narrower", f"{GRID}{SOURCE_ID}") in triples
+    assert (
+        Triple(f"{GRID}{TARGET_ID}", f"{SKOS}narrower", f"{GRID}{SOURCE_ID}") in triples
+    )
 
 
 @then("a grid:inspiredBy triple exists from source to target")
 def check_custom_forward(triples):
-    assert Triple(
-        f"{GRID}{SOURCE_ID}", f"{GRID}inspiredBy", f"{GRID}{TARGET_ID}"
-    ) in triples
+    assert (
+        Triple(f"{GRID}{SOURCE_ID}", f"{GRID}inspiredBy", f"{GRID}{TARGET_ID}")
+        in triples
+    )
 
 
 @given(
-    parsers.parse(
-        'a note with a "{link_type}" link to a dangling target "{target}"'
-    ),
+    parsers.parse('a note with a "{link_type}" link to a dangling target "{target}"'),
     target_fixture="note",
 )
 def note_with_dangling_link(link_type, target):
@@ -170,9 +185,10 @@ def note_with_dangling_link(link_type, target):
 
 @then("a grid:linksTo triple exists from source to the dangling target")
 def check_dangling_projected(triples):
-    assert Triple(
-        f"{GRID}{SOURCE_ID}", f"{GRID}linksTo", f"{GRID}{DANGLING_ID}"
-    ) in triples
+    assert (
+        Triple(f"{GRID}{SOURCE_ID}", f"{GRID}linksTo", f"{GRID}{DANGLING_ID}")
+        in triples
+    )
 
 
 @then("the dangling target is not asserted to be a grid:Note")
